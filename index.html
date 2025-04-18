@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>tinyAgent - AI Tool Framework</title>
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="mobile.css" />
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
       rel="stylesheet"
@@ -20,6 +21,13 @@
   <body>
     <header class="site-header">
       <div class="container header-container">
+        <div class="logo-container">
+          <img
+            src="static/images/tinyAgent_logo_v2.png"
+            alt="tinyAgent Logo"
+            class="header-logo"
+          />
+        </div>
         <nav class="main-nav">
           <ul>
             <li><a href="#features">Features</a></li>
@@ -36,8 +44,12 @@
             <!-- Add Discord later if needed -->
           </ul>
         </nav>
-        <!-- Mobile Nav Toggle (optional) -->
-        <!-- <button class="mobile-nav-toggle">☰</button> -->
+        <!-- Mobile Nav Toggle -->
+        <button class="mobile-nav-toggle" aria-label="Toggle navigation">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
       </div>
     </header>
 
@@ -72,31 +84,28 @@
             </button>
             <pre class="language-python code-block-modern"><code>
 from tinyagent.decorators import tool
-from tinyagent.factory.agent_factory import AgentFactory
+from tinyagent.agent import tiny_agent
 
 @tool
 def calculate_sum(a: int, b: int) -> int:
-    """Calculate the sum of two integers."""
+    """Return the sum of two integers."""
     return a + b
 
-def main():
-    agent = AgentFactory.get_instance().create_agent(tools=[calculate_sum])
-    query = "calculate the sum of 5 and 3"
-    print(f"Query: '{query}'")
-    result = agent.run(query, expected_type=int)
-    print(f"Result: {result}")
-
 if __name__ == "__main__":
-    main()</code></pre>
+    agent = tiny_agent(tools=[calculate_sum])
+    query = "calculate the sum of 5 and 3"
+    result = agent.run(query, expected_type=int)
+    print(f"Query: '{query}' -> Result: {result}")
+</code></pre>
           </div>
         </div>
         <div class="ascii-banner">
           <h2 class="brutalist-title">FUNCTIONS AS AGENTS</h2>
           <pre class="ascii-art">
 PYTHON FUNCTION → TOOL → AGENT → RESULT
-|                  |       |        |
-v                  v       v        v
-def hello()     @tool     🤖    "Hello!"</pre
+      |              |       |        |
+      v              v       v        v
+def hello()       @tool     🤖     "Hello!"</pre
           >
         </div>
       </section>
@@ -210,7 +219,7 @@ wget https://raw.githubusercontent.com/alchemiststudiosDOTai/tinyAgent/v0.65/.en
 
 # Edit .env with your API keys
 # Required: OpenRouter API key (https://openrouter.ai)
-                </code></pre>
+            </code></pre>
           </div>
           <div class="guide-buttons">
             <!-- Adjust links as needed -->
@@ -252,7 +261,7 @@ from tinyagent.decorators import tool
 def greet_person(name: str) -> str:
     """Return a friendly greeting."""
     return f"Hello, {name}!"
-                    </code></pre>
+                </code></pre>
               </div>
             </div>
             <!-- Add more concept cards here -->
@@ -264,12 +273,59 @@ def greet_person(name: str) -> str:
                 orchestration. It lets your agent solve complex tasks by
                 chaining together multiple tools, using an LLM-powered "triage
                 agent" to plan the best sequence.
-                <span class="highlight"
-                  >See a full example in
-                  <code>cookbook/tiny_agent_chain.py</code>.</span
-                >
               </p>
-              <!-- Add code example if desired -->
+              <div class="code-window">
+                <div class="code-header">
+                  <span class="file-name">tariff_research.py</span>
+                </div>
+                <pre><code class="language-python">#!/usr/bin/env python3
+"""
+tiny_chain example: automatically find and summarise U.S. import-tariff data
+"""
+from tinyagent.factory.tiny_chain import tiny_chain
+from tinyagent.tools.duckduckgo_search import get_tool as search_tool
+from tinyagent.tools.custom_text_browser import get_tool as browser_tool
+from tinyagent.decorators import tool
+from tinyagent.agent import get_llm
+
+@tool(name="summarize", description="Summarize input text with the LLM")
+def summarize(text: str) -> str:
+    prompt = f"Summarize the following text:\n\n{text}\n\nSummary:"
+    return get_llm()(prompt).strip()
+
+# 1 – build the chain
+chain = tiny_chain.get_instance(
+    tools=[search_tool(), browser_tool(), summarize._tool]
+)
+
+# 2 – submit any natural-language task
+task_id = chain.submit_task(
+    "Find current US import tariffs and visit official trade websites for details"
+)
+
+# 3 – get structured results
+print(chain.get_task_status(task_id).result)</code></pre>
+              </div>
+              <div class="feature-highlights">
+                <h4>What it demonstrates</h4>
+                <ul>
+                  <li>
+                    🔗 Automatic tool planning (triage agent) - Picks search →
+                    browse → summarize
+                  </li>
+                  <li>
+                    🛠 Pluggable tools - DuckDuckGo search + custom browser + any
+                    @tool
+                  </li>
+                  <li>
+                    �� Structured trace - steps, tools_used, errors if any
+                  </li>
+                  <li>
+                    🤖 LLM-powered step - summarize converts page content →
+                    concise answer
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -358,13 +414,91 @@ def greet_person(name: str) -> str:
       </p>
     </footer>
 
-    <!-- Optional: Add JS for mobile nav toggle or other interactions -->
-    <!-- <script src="script.js"></script> -->
-    <!-- Add Prism.js for syntax highlighting -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <!-- Add JS for mobile nav toggle -->
     <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const mobileNavToggle = document.querySelector(".mobile-nav-toggle");
+        const mainNav = document.querySelector(".main-nav");
+        const body = document.querySelector("body");
+
+        // Function to toggle mobile menu
+        function toggleMobileMenu() {
+          mainNav.classList.toggle("show");
+          mobileNavToggle.classList.toggle("active");
+
+          // Prevent background scrolling when menu is open
+          if (mainNav.classList.contains("show")) {
+            body.style.overflow = "hidden";
+          } else {
+            body.style.overflow = "";
+          }
+        }
+
+        // Click event for toggle button
+        mobileNavToggle.addEventListener("click", toggleMobileMenu);
+
+        // Handle swipe gestures for menu
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        // Track touch start position
+        document.addEventListener(
+          "touchstart",
+          function (e) {
+            touchStartX = e.changedTouches[0].screenX;
+          },
+          false
+        );
+
+        // Handle touch end and calculate swipe
+        document.addEventListener(
+          "touchend",
+          function (e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+          },
+          false
+        );
+
+        // Determine swipe direction and toggle menu accordingly
+        function handleSwipe() {
+          if (
+            touchEndX < touchStartX - 50 &&
+            !mainNav.classList.contains("show")
+          ) {
+            // Swipe left to open menu
+            toggleMobileMenu();
+          } else if (
+            touchEndX > touchStartX + 50 &&
+            mainNav.classList.contains("show")
+          ) {
+            // Swipe right to close menu
+            toggleMobileMenu();
+          }
+        }
+
+        // Close menu when clicking on a link
+        const navLinks = document.querySelectorAll(".main-nav a");
+        navLinks.forEach((link) => {
+          link.addEventListener("click", function () {
+            mainNav.classList.remove("show");
+            mobileNavToggle.classList.remove("active");
+            body.style.overflow = "";
+          });
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener("click", function (e) {
+          if (
+            mainNav.classList.contains("show") &&
+            !e.target.closest(".main-nav") &&
+            !e.target.closest(".mobile-nav-toggle")
+          ) {
+            toggleMobileMenu();
+          }
+        });
+      });
+
       function copyCode(button) {
         const codeBlock = button.nextElementSibling.querySelector("code");
         const text = codeBlock.textContent;
@@ -398,8 +532,35 @@ def greet_person(name: str) -> str:
         animateItems.forEach((item) => {
           observer.observe(item);
         });
+
+        // Make code samples responsive on viewport resize
+        function adjustCodeForSmallScreens() {
+          const codeBlocks = document.querySelectorAll(
+            ".hero-code pre, .terminal-window pre, .code-window pre"
+          );
+          if (window.innerWidth <= 768) {
+            codeBlocks.forEach((block) => {
+              block.style.fontSize = "0.8rem";
+              block.style.padding = "1rem";
+            });
+          } else {
+            codeBlocks.forEach((block) => {
+              block.style.fontSize = "";
+              block.style.padding = "";
+            });
+          }
+        }
+
+        // Run on load and when window resizes
+        adjustCodeForSmallScreens();
+        window.addEventListener("resize", adjustCodeForSmallScreens);
       });
     </script>
+
+    <!-- Add Prism.js for syntax highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
 
     <style>
       /* BRUTALIST TYPOGRAPHY OVERRIDES */
@@ -596,16 +757,6 @@ def greet_person(name: str) -> str:
         padding-left: 2rem;
       }
 
-      @media (max-width: 768px) {
-        .resources-title {
-          font-size: 2rem;
-        }
-
-        .brutalist-link {
-          font-size: 1rem;
-        }
-      }
-
       .ascii-banner {
         background: var(--dark-bg);
         padding: 2rem;
@@ -637,16 +788,6 @@ def greet_person(name: str) -> str:
         letter-spacing: 1px;
       }
 
-      @media (max-width: 768px) {
-        .brutalist-title {
-          font-size: 1.5rem;
-        }
-        .ascii-art {
-          font-size: 0.9rem;
-          letter-spacing: 0;
-        }
-      }
-
       .creator-info {
         text-align: center;
         color: var(--subtle-text);
@@ -657,12 +798,234 @@ def greet_person(name: str) -> str:
         line-height: 1.6;
       }
 
-      @media (max-width: 768px) {
+      /* Added mobile responsive styles */
+      .mobile-nav-toggle {
+        display: none;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 30px;
+        height: 21px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        z-index: 200;
+      }
+
+      .mobile-nav-toggle .bar {
+        height: 3px;
+        width: 100%;
+        background-color: var(--primary-color);
+        transition: all 0.3s ease;
+      }
+
+      .mobile-nav-toggle.active .bar:nth-child(1) {
+        transform: translateY(9px) rotate(45deg);
+      }
+
+      .mobile-nav-toggle.active .bar:nth-child(2) {
+        opacity: 0;
+      }
+
+      .mobile-nav-toggle.active .bar:nth-child(3) {
+        transform: translateY(-9px) rotate(-45deg);
+      }
+
+      .header-logo {
+        max-height: 40px;
+        width: auto;
+      }
+
+      /* Enhanced Mobile Responsiveness */
+      @media (max-width: 992px) {
+        .hero-container {
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+
+        .hero-content {
+          padding-right: 0;
+          text-align: center;
+        }
+
+        .hero-logo {
+          margin: 0 auto 2rem;
+        }
+
+        .hero-cta {
+          justify-content: center;
+        }
+
+        .hero-code {
+          max-width: 100%;
+          margin: 0 auto;
+        }
+
+        .features-grid,
+        .testimonials-grid,
+        .concept-cards {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
         .ascii-art {
+          font-size: 1rem;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          width: 95%;
+          padding: 0 0.5rem;
+        }
+
+        .mobile-nav-toggle {
+          display: flex;
+        }
+
+        .main-nav {
+          position: fixed;
+          top: 0;
+          right: -100%;
+          width: 80%;
+          height: 100vh;
+          background-color: var(--dark-card);
+          flex-direction: column;
+          justify-content: flex-start;
+          padding-top: 5rem;
+          z-index: 100;
+          transition: right 0.3s ease;
+          border-left: 2px solid var(--primary-color);
+        }
+
+        .main-nav.show {
+          right: 0;
+        }
+
+        .main-nav ul {
+          flex-direction: column;
+          gap: 0;
+        }
+
+        .main-nav li {
+          width: 100%;
+          border-bottom: 1px solid var(--border-color);
+        }
+
+        .main-nav a {
+          display: block;
+          padding: 1.2rem 2rem;
+          width: 100%;
+        }
+
+        .main-nav a:hover {
+          background-color: var(--dark-bg);
+          padding-left: 2.5rem;
+        }
+
+        .hero-content h1 {
+          font-size: 2rem;
+        }
+
+        .subtitle {
+          font-size: 1rem;
+        }
+
+        .btn {
+          padding: 0.6rem 1rem;
+          font-size: 0.9rem;
+        }
+
+        .section-title {
+          font-size: 1.75rem;
+          margin-bottom: 2rem;
+        }
+
+        .features-grid,
+        .testimonials-grid,
+        .concept-cards {
+          grid-template-columns: 1fr;
+        }
+
+        .feature-card,
+        .concept-card,
+        .testimonial-card {
+          padding: 1.5rem;
+        }
+
+        .footer-container {
+          flex-direction: column;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .copyright {
+          text-align: center;
           font-size: 0.8rem;
         }
-        .creator-info {
+
+        .ascii-art {
+          font-size: 0.7rem;
+          letter-spacing: 0;
+        }
+
+        .brutalist-title {
+          font-size: 1.5rem;
+        }
+
+        /* Adjust the hero code block for mobile */
+        .hero-code {
+          width: 100%;
+          margin: 1rem auto;
           font-size: 0.8rem;
+        }
+
+        .hero-code pre {
+          padding: 1rem;
+        }
+
+        /* Create more space in mobile view */
+        section {
+          padding: 3rem 0;
+        }
+
+        /* Adjust spacing for headers on mobile */
+        .site-header {
+          padding: 0.8rem 0;
+        }
+
+        /* Make buttons more mobile-friendly */
+        .hero-cta {
+          flex-direction: column;
+          gap: 1rem;
+          width: 100%;
+        }
+
+        .hero-cta .btn {
+          width: 100%;
+          text-align: center;
+        }
+      }
+
+      /* Small mobile devices */
+      @media (max-width: 480px) {
+        .hero-content h1 {
+          font-size: 1.75rem;
+        }
+
+        .brutalist-link {
+          font-size: 0.9rem;
+          padding: 0.8rem;
+        }
+
+        .brutalist-notice {
+          padding: 1.5rem;
+        }
+
+        .notice-title {
+          font-size: 1rem;
+        }
+
+        .notice-text {
+          font-size: 0.9rem;
         }
       }
     </style>

@@ -1057,3 +1057,37 @@ pre::before {
     font-size: 1rem;
   }
 }
+
+/* Feature Highlights Section */
+.feature-highlights {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: var(--dark-card);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.feature-highlights h4 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: var(--accent-color);
+}
+
+.feature-highlights ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.feature-highlights li {
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--primary-color);
+}
+
+.feature-highlights li:last-child {
+  margin-bottom: 0;
+}
