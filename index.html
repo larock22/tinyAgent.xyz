@@ -914,6 +914,7 @@ print(chain.get_task_status(task_id).result)</code></pre>
           display: block;
           padding: 1.2rem 2rem;
           width: 100%;
+          color: var(--primary-color);
         }
 
         .main-nav a:hover {
@@ -949,6 +950,11 @@ print(chain.get_task_status(task_id).result)</code></pre>
         .concept-card,
         .testimonial-card {
           padding: 1.5rem;
+        }
+
+        /* Add overflow handling for code windows in concept cards */
+        .concept-card .code-window pre {
+          overflow-x: auto; /* Allow horizontal scrolling if needed */
         }
 
         .footer-container {
