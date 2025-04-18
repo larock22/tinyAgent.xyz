@@ -78,6 +78,8 @@
   .container {
     width: 95%;
     padding: 0 0.5rem;
+    /* Prevent horizontal overflow */
+    overflow-x: hidden;
   }
 
   .mobile-nav-toggle {
@@ -121,6 +123,8 @@
     /* Increase touch target size for better accessibility */
     min-height: 44px;
     line-height: 1.2;
+    /* Explicitly ensure touch target */
+    box-sizing: border-box;
   }
 
   .main-nav a:hover {
@@ -130,6 +134,13 @@
 
   .hero-content h1 {
     font-size: 2rem;
+    /* Improve touch targets */
+    min-height: 44px;
+    min-width: 44px; /* Ensure minimum width too */
+    display: inline-flex; /* Helps align text vertically */
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
   }
 
   .subtitle {
@@ -157,7 +168,9 @@
 
   .feature-card,
   .concept-card,
-  .testimonial-card {
+  .testimonial-card,
+  .merch-card {
+    /* Add merch card */
     padding: 1.5rem;
   }
 
@@ -180,6 +193,8 @@
   .copyright {
     text-align: center;
     font-size: 0.8rem;
+    padding: 10px 15px;
+    box-sizing: border-box; /* Include padding in size */
   }
 
   .ascii-art {
@@ -236,6 +251,37 @@
     min-height: 44px;
     display: flex;
     align-items: center;
+    box-sizing: border-box; /* Include padding in size */
+  }
+
+  /* Style Merch Section for Mobile */
+  .merch-section {
+    padding: 2rem 0; /* Adjust padding */
+  }
+
+  .merch-card {
+    text-align: center; /* Center content */
+  }
+
+  .merch-image {
+    max-width: 80%; /* Don't let image take full width */
+    height: auto;
+    margin-bottom: 1rem;
+  }
+
+  .merch-card h3 {
+    font-size: 1.4rem; /* Adjust heading size */
+    margin-bottom: 0.5rem;
+  }
+
+  .merch-card p {
+    font-size: 0.9rem; /* Adjust text size */
+    margin-bottom: 1rem;
+  }
+
+  .merch-card .btn {
+    width: auto; /* Allow button to size to content */
+    padding: 0.8rem 1.5rem; /* Adjust button padding */
   }
 }
 
@@ -277,7 +323,9 @@
 
   /* Reduce padding for better space efficiency */
   .feature-card,
-  .concept-card {
+  .concept-card,
+  .merch-card {
+    /* Add merch card */
     padding: 1.2rem;
   }
 
@@ -292,6 +340,14 @@
   .subtle-note {
     font-size: 0.9rem;
     line-height: 1.5;
+  }
+
+  .merch-image {
+    max-width: 70%; /* Further reduce image size */
+  }
+
+  .merch-card h3 {
+    font-size: 1.2rem; /* Smaller heading */
   }
 }
 
