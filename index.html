@@ -1,88 +1,183 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>tinyAgent - AI Tool Framework</title>
-    <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="mobile.css" />
+    <title>tinyAgent – AI Tool Framework</title>
+
+    <!-- Tailwind (with custom brutalist palette) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'primary': '#e6edf3',
+              'accent': '#f56565',
+              'dark-bg': '#0d1117',
+              'dark-card': '#161b22',
+              'border-color': '#30363d',
+              'subtle-text': '#8b949e',
+            },
+            fontFamily: {
+              'mono': ['"JetBrains Mono"', 'monospace'],
+              'sans': ['Inter', 'sans-serif'],
+            },
+            boxShadow: {
+              brutal: '0 0 0 2px #e6edf3',
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- JetBrains Mono + Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Prism for code syntax -->
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
       rel="stylesheet"
     />
-    <!-- Modern Font Import -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
   </head>
-  <body>
-    <header class="site-header">
-      <div class="container header-container">
-        <div class="logo-container">
+  <body class="bg-dark-bg text-primary font-sans" style="background-color: #0d1117;">
+    <style>
+      /* CSS Reset */
+      html, body {
+        background-color: #0d1117;
+        color: #e6edf3;
+      }
+      
+      /* CSS Variables */
+      :root {
+        --primary-color: #e6edf3;
+        --accent-color: #f56565;
+        --dark-bg: #0d1117;
+        --dark-card: #161b22;
+        --border-color: #30363d;
+        --subtle-text: #8b949e;
+      }
+      
+      /* Debug colors */
+      .bg-dark-bg {
+        background-color: #0d1117 !important;
+      }
+      .bg-dark-card {
+        background-color: #161b22 !important;
+      }
+
+      /* Utility Classes */
+      .btn-primary {
+        @apply bg-accent text-white font-mono uppercase px-4 py-2 border-2 border-primary hover:opacity-90 transition-all;
+      }
+      
+      .btn-secondary {
+        @apply bg-transparent text-primary font-mono uppercase px-4 py-2 border-2 border-primary hover:bg-accent/10 transition-all;
+      }
+      
+      .section-heading {
+        @apply font-mono text-2xl md:text-3xl uppercase border-b-2 border-primary pb-4 mb-8;
+      }
+      
+      /* Animation */
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      .animate-in {
+        animation: fadeIn 0.5s ease-out forwards;
+      }
+    </style>
+    <header class="sticky top-0 z-50 bg-dark-bg border-b-2 border-primary">
+      <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+        <div class="flex items-center">
           <img
             src="static/images/tinyAgent_logo_v2.png"
             alt="tinyAgent Logo"
-            class="header-logo"
+            class="h-10 w-auto"
           />
         </div>
-        <nav class="main-nav">
-          <ul>
-            <li><a href="#features">Features</a></li>
-            <li><a href="#getting-started">Getting Started</a></li>
-            <li><a href="#documentation">Documentation</a></li>
+        <nav class="hidden md:block">
+          <ul class="flex space-x-6">
+            <li><a href="#features" class="font-mono uppercase text-primary hover:text-accent transition-all">Features</a></li>
+            <li><a href="#getting-started" class="font-mono uppercase text-primary hover:text-accent transition-all">Getting Started</a></li>
+            <li><a href="#documentation" class="font-mono uppercase text-primary hover:text-accent transition-all">Documentation</a></li>
             <li>
               <a
                 href="https://github.com/alchemiststudiosDOTai/tinyAgent"
                 target="_blank"
                 rel="noopener"
+                class="font-mono uppercase text-primary hover:text-accent transition-all"
                 >GitHub</a
               >
             </li>
-            <!-- Add Discord later if needed -->
           </ul>
         </nav>
         <!-- Mobile Nav Toggle -->
-        <button class="mobile-nav-toggle" aria-label="Toggle navigation">
-          <span class="bar"></span>
-          <span class="bar"></span>
-          <span class="bar"></span>
+        <button class="md:hidden flex flex-col justify-between w-7 h-5 bg-transparent border-none cursor-pointer z-50" id="mobileNavToggle" aria-label="Toggle navigation">
+          <span class="w-full h-0.5 bg-primary transition-all duration-300"></span>
+          <span class="w-full h-0.5 bg-primary transition-all duration-300"></span>
+          <span class="w-full h-0.5 bg-primary transition-all duration-300"></span>
         </button>
+      </div>
+      <!-- Mobile Menu -->
+      <div class="fixed inset-0 bg-dark-card z-40 transform translate-x-full transition-transform duration-300 ease-in-out md:hidden" id="mobileMenu">
+        <div class="pt-20 px-6">
+          <nav>
+            <ul class="space-y-1">
+              <li><a href="#features" class="block py-3 px-4 font-mono uppercase text-primary hover:text-accent hover:pl-6 transition-all border-b border-border-color">Features</a></li>
+              <li><a href="#getting-started" class="block py-3 px-4 font-mono uppercase text-primary hover:text-accent hover:pl-6 transition-all border-b border-border-color">Getting Started</a></li>
+              <li><a href="#documentation" class="block py-3 px-4 font-mono uppercase text-primary hover:text-accent hover:pl-6 transition-all border-b border-border-color">Documentation</a></li>
+              <li>
+                <a
+                  href="https://github.com/alchemiststudiosDOTai/tinyAgent"
+                  target="_blank"
+                  rel="noopener"
+                  class="block py-3 px-4 font-mono uppercase text-primary hover:text-accent hover:pl-6 transition-all"
+                  >GitHub</a
+                >
+              </li>
+            </ul>
+          </nav>
+        </div>
       </div>
     </header>
 
-    <main>
-      <section class="hero">
-        <div class="container hero-container">
-          <div class="hero-content">
-            <img
-              src="static/images/tinyAgent_logo_v2.png"
-              alt="tinyAgent Logo"
-              class="hero-logo"
-            />
-            <h1>
-              Turn Functions into <span class="gradient-text">AI Tools</span>
-            </h1>
-            <p class="subtitle">
-              tinyAgent lets you wrap any Python function with a simple
-              decorator, combine agents to solve complex problems, and leverage
-              experimental meta-agents.
-            </p>
-            <div class="hero-cta">
-              <a href="#getting-started" class="btn btn-primary">Get Started</a>
-              <a href="#documentation" class="btn btn-secondary"
-                >Documentation</a
-              >
+    <main class="bg-dark-bg">
+      <section class="relative pt-20 pb-10 border-b-2 border-primary bg-dark-bg">
+        <div class="container mx-auto px-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div class="flex flex-col items-center md:items-start text-center md:text-left space-y-6">
+              <img
+                src="static/images/tinyAgent_logo_v2.png"
+                alt="tinyAgent Logo"
+                class="h-20 w-auto mb-6"
+              />
+              <h1 class="text-3xl md:text-4xl font-mono uppercase font-bold tracking-tight">
+                Turn Functions into <span class="text-accent">AI Tools</span>
+              </h1>
+              <p class="text-lg text-subtle-text max-w-lg">
+                tinyAgent lets you wrap any Python function with a simple
+                decorator, combine agents to solve complex problems, and leverage
+                experimental meta-agents.
+              </p>
+              <div class="flex flex-col sm:flex-row gap-4">
+                <a href="#getting-started" class="btn-primary">Get Started</a>
+                <a href="#documentation" class="btn-secondary">Documentation</a>
+              </div>
             </div>
-          </div>
-          <div class="hero-code">
-            <button class="copy-button" onclick="copyCode(this)">
-              <span class="copy-icon">📋</span>
-              <span class="copy-text">Copy</span>
-            </button>
-            <pre class="language-python code-block-modern"><code>
+            <div class="relative bg-dark-card border-2 border-primary rounded-none p-2">
+              <button class="absolute top-4 right-4 bg-dark-bg/80 backdrop-blur-sm text-white px-2 py-1 flex items-center space-x-1 z-10" onclick="copyCode(this)">
+                <span class="text-lg">📋</span>
+                <span class="copy-text">Copy</span>
+              </button>
+              <pre class="language-python overflow-x-auto text-sm md:text-base rounded-none"><code>
 from tinyagent.decorators import tool
 from tinyagent.agent import tiny_agent
 
@@ -97,117 +192,128 @@ if __name__ == "__main__":
     result = agent.run(query, expected_type=int)
     print(f"Query: '{query}' -> Result: {result}")
 </code></pre>
+            </div>
           </div>
         </div>
-        <div class="ascii-banner">
-          <h2 class="brutalist-title">FUNCTIONS AS AGENTS</h2>
-          <pre class="ascii-art">
+        <div class="mt-12 bg-dark-card border-y-2 border-primary py-8 text-center">
+          <h2 class="font-mono text-2xl md:text-3xl uppercase font-bold mb-6 text-primary">FUNCTIONS AS AGENTS</h2>
+          <pre class="font-mono text-sm md:text-base text-primary whitespace-pre overflow-x-auto">
 PYTHON FUNCTION → TOOL → AGENT → RESULT
       |              |       |        |
       v              v       v        v
-def hello()       @tool     🤖     "Hello!"</pre
-          >
+def hello()       @tool     🤖     "Hello!"</pre>
         </div>
       </section>
+    </main>
 
-      <section id="features" class="features-section">
-        <div class="container">
-          <h2 class="section-title">Features</h2>
-          <div class="features-grid">
-            <div class="feature-card">
-              <div class="feature-icon">
-                <img
-                  src="static/images/icons/icon-1.png"
-                  alt="Function-First Design Icon"
-                />
-              </div>
-              <h3>Function-First Design</h3>
-              <p>
-                Transform any Python function into an AI-powered tool with a
-                simple decorator - no complex setup required.
-              </p>
+    <!-- ================= FEATURES ================= -->
+    <section id="features" class="py-16 border-b-2 border-primary bg-dark-bg">
+      <div class="container mx-auto px-4">
+        <h2 class="section-heading">Features</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="bg-dark-card border-2 border-primary p-6 hover:border-accent transition-all">
+            <div class="mb-4 h-12 w-12 flex items-center justify-center">
+              <img
+                src="static/images/icons/icon-1.png"
+                alt="Function-First Design Icon"
+                class="h-full w-auto"
+              />
             </div>
-            <div class="feature-card">
-              <div class="feature-icon">
-                <img
-                  src="static/images/icons/icon-2.png"
-                  alt="Seamless Orchestration Icon"
-                />
-              </div>
-              <h3>Seamless Orchestration</h3>
-              <p>
-                Chain tools together to solve complex tasks with tiny_chain's
-                smart orchestration engine.
-              </p>
+            <h3 class="font-mono text-xl uppercase font-bold mb-3">Function-First Design</h3>
+            <p class="text-subtle-text">
+              Transform any Python function into an AI-powered tool with a
+              simple decorator - no complex setup required.
+            </p>
+          </div>
+          <div class="bg-dark-card border-2 border-primary p-6 hover:border-accent transition-all">
+            <div class="mb-4 h-12 w-12 flex items-center justify-center">
+              <img
+                src="static/images/icons/icon-2.png"
+                alt="Seamless Orchestration Icon"
+                class="h-full w-auto"
+              />
             </div>
-            <div class="feature-card">
-              <div class="feature-icon">
-                <img
-                  src="static/images/icons/icon-3.png"
-                  alt="Modular & Extensible Icon"
-                />
-              </div>
-              <h3>Modular & Extensible</h3>
-              <p>
-                Build, combine, and extend agents to create powerful solutions
-                for any use case.
-              </p>
+            <h3 class="font-mono text-xl uppercase font-bold mb-3">Seamless Orchestration</h3>
+            <p class="text-subtle-text">
+              Chain tools together to solve complex tasks with tiny_chain's
+              smart orchestration engine.
+            </p>
+          </div>
+          <div class="bg-dark-card border-2 border-primary p-6 hover:border-accent transition-all">
+            <div class="mb-4 h-12 w-12 flex items-center justify-center">
+              <img
+                src="static/images/icons/icon-3.png"
+                alt="Modular & Extensible Icon"
+                class="h-full w-auto"
+              />
             </div>
-            <div class="feature-card">
-              <div class="feature-icon">
-                <img
-                  src="static/images/icons/icon-4.png"
-                  alt="Flexible Agent Options Icon"
-                />
-              </div>
-              <h3>Flexible Agent Options</h3>
-              <p>
-                Use the simple orchestrator or advanced AgentFactory to create
-                powerful agents.
-              </p>
+            <h3 class="font-mono text-xl uppercase font-bold mb-3">Modular & Extensible</h3>
+            <p class="text-subtle-text">
+              Build, combine, and extend agents to create powerful solutions
+              for any use case.
+            </p>
+          </div>
+          <div class="bg-dark-card border-2 border-primary p-6 hover:border-accent transition-all">
+            <div class="mb-4 h-12 w-12 flex items-center justify-center">
+              <img
+                src="static/images/icons/icon-4.png"
+                alt="Flexible Agent Options Icon"
+                class="h-full w-auto"
+              />
             </div>
-            <div class="feature-card">
-              <div class="feature-icon">
-                <img
-                  src="static/images/icons/icon-5.png"
-                  alt="Structured Output Icon"
-                />
-              </div>
-              <h3>Structured Output</h3>
-              <p>
-                Enforce JSON formats for consistent, reliable outputs across
-                your agents.
-              </p>
+            <h3 class="font-mono text-xl uppercase font-bold mb-3">Flexible Agent Options</h3>
+            <p class="text-subtle-text">
+              Use the simple orchestrator or advanced AgentFactory to create
+              powerful agents.
+            </p>
+          </div>
+          <div class="bg-dark-card border-2 border-primary p-6 hover:border-accent transition-all">
+            <div class="mb-4 h-12 w-12 flex items-center justify-center">
+              <img
+                src="static/images/icons/icon-5.png"
+                alt="Structured Output Icon"
+                class="h-full w-auto"
+              />
             </div>
-            <div class="feature-card">
-              <div class="feature-icon">
-                <img
-                  src="static/images/icons/icon-6.png"
-                  alt="Robust Architecture Icon"
-                />
-              </div>
-              <h3>Robust Architecture</h3>
-              <p>
-                Built with reliability and flexibility in mind for production
-                environments.
-              </p>
+            <h3 class="font-mono text-xl uppercase font-bold mb-3">Structured Output</h3>
+            <p class="text-subtle-text">
+              Enforce JSON formats for consistent, reliable outputs across
+              your agents.
+            </p>
+          </div>
+          <div class="bg-dark-card border-2 border-primary p-6 hover:border-accent transition-all">
+            <div class="mb-4 h-12 w-12 flex items-center justify-center">
+              <img
+                src="static/images/icons/icon-6.png"
+                alt="Robust Architecture Icon"
+                class="h-full w-auto"
+              />
             </div>
+            <h3 class="font-mono text-xl uppercase font-bold mb-3">Robust Architecture</h3>
+            <p class="text-subtle-text">
+              Built with reliability and flexibility in mind for production
+              environments.
+            </p>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section id="getting-started" class="getting-started-section">
-        <div class="container">
-          <h2 class="section-title">Getting Started</h2>
-          <!-- Using your installation code block -->
-          <div class="terminal-window">
-            <div class="terminal-header">
-              <span class="terminal-button"></span>
-              <span class="terminal-button"></span>
-              <span class="terminal-button"></span>
-              <span class="terminal-title">Terminal</span>
+    <!-- ================= GETTING STARTED ================= -->
+    <section id="getting-started" class="py-16 bg-dark-card border-b-2 border-primary">
+      <div class="container mx-auto px-4">
+        <h2 class="section-heading">Getting Started</h2>
+        <!-- Terminal window with installation instructions -->
+        <div class="bg-[#1a1a2a] border-2 border-primary max-w-3xl mx-auto mb-10">
+          <div class="bg-[#2d2d40] px-4 py-2 flex items-center">
+            <div class="flex space-x-2">
+              <div class="h-3 w-3 rounded-full bg-red-500"></div>
+              <div class="h-3 w-3 rounded-full bg-yellow-500"></div>
+              <div class="h-3 w-3 rounded-full bg-green-500"></div>
             </div>
-            <pre><code class="language-bash">
+            <div class="ml-4 text-primary text-sm font-mono">Terminal</div>
+          </div>
+          <pre class="language-bash p-4 text-sm md:text-base overflow-x-auto bg-[#1a1a2a] text-primary">
 # Install via pip (Recommended)
 pip install tiny_agent_os
 
@@ -219,66 +325,67 @@ wget https://raw.githubusercontent.com/alchemiststudiosDOTai/tinyAgent/v0.65/.en
 
 # Edit .env with your API keys
 # Required: OpenRouter API key (https://openrouter.ai)
-            </code></pre>
-          </div>
-          <div class="guide-buttons">
-            <!-- Adjust links as needed -->
-            <a href="#documentation" class="btn btn-secondary"
-              >Installation Guide</a
-            >
-            <a href="#documentation" class="btn btn-secondary">Usage Guide</a>
-          </div>
-          <p class="subtle-note">
-            Both the config.yml and env work out of the box with an openrouter
-            API. You can use any OpenAI API, and the config has an example of a
-            local LLM.
-          </p>
+          </pre>
         </div>
-      </section>
+        <div class="flex flex-col sm:flex-row justify-center gap-4 mb-8">
+          <a href="#documentation" class="btn-secondary">Installation Guide</a>
+          <a href="#documentation" class="btn-secondary">Usage Guide</a>
+        </div>
+        <p class="text-center text-subtle-text text-sm max-w-2xl mx-auto">
+          Both the config.yml and env work out of the box with an openrouter
+          API. You can use any OpenAI API, and the config has an example of a
+          local LLM.
+        </p>
+      </div>
+    </section>
 
-      <!-- Section for Core Concepts / Examples (Optional - adapt from your original) -->
-      <section id="core-concepts" class="core-concepts-section">
-        <div class="container">
-          <h2 class="section-title">Core Concepts</h2>
-          <div class="concept-cards">
-            <div class="concept-card">
-              <div class="concept-icon">🛠️</div>
-              <h3>Tools and the @tool Decorator</h3>
-              <p>
-                Transform <strong>any Python function</strong> into a usable
-                "tool" with the <code>@tool</code> decorator. This makes it
-                discoverable by your agents, allowing them to execute functions
-                in response to natural-language queries.
-              </p>
-              <div class="code-window">
-                <div class="code-header">
-                  <span class="file-name">tool_example.py</span>
-                </div>
-                <pre><code class="language-python">
+    <!-- ================= CORE CONCEPTS ================= -->
+    <section id="core-concepts" class="py-16 border-b-2 border-primary bg-dark-bg">
+      <div class="container mx-auto px-4">
+        <h2 class="section-heading">Core Concepts</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div class="bg-dark-card border-2 border-primary p-6 hover:border-accent transition-all">
+            <div class="flex items-center mb-4">
+              <div class="text-3xl mr-3 text-accent">🛠️</div>
+              <h3 class="font-mono text-xl uppercase font-bold">Tools and the @tool Decorator</h3>
+            </div>
+            <p class="text-subtle-text mb-6">
+              Transform <strong>any Python function</strong> into a usable
+              "tool" with the <code class="bg-dark-bg px-1 rounded">@tool</code> decorator. This makes it
+              discoverable by your agents, allowing them to execute functions
+              in response to natural-language queries.
+            </p>
+            <div class="bg-[#1a1a2a] border-2 border-primary overflow-hidden">
+              <div class="bg-[#2d2d40] px-4 py-2 flex items-center">
+                <span class="text-primary text-sm font-mono">tool_example.py</span>
+              </div>
+              <pre class="language-python p-4 text-sm md:text-base overflow-x-auto bg-[#1a1a2a]">
 from tinyagent.decorators import tool
 
 @tool
 def greet_person(name: str) -> str:
     """Return a friendly greeting."""
     return f"Hello, {name}!"
-                </code></pre>
-              </div>
+              </pre>
             </div>
-            <!-- Add more concept cards here -->
-            <div class="concept-card">
-              <div class="concept-icon">🔄</div>
-              <h3>Orchestration with tiny_chain</h3>
-              <p>
-                <strong>tiny_chain</strong> is the main engine of tinyAgent's
-                orchestration. It lets your agent solve complex tasks by
-                chaining together multiple tools, using an LLM-powered "triage
-                agent" to plan the best sequence.
-              </p>
-              <div class="code-window">
-                <div class="code-header">
-                  <span class="file-name">tariff_research.py</span>
-                </div>
-                <pre><code class="language-python">#!/usr/bin/env python3
+          </div>
+          
+          <div class="bg-dark-card border-2 border-primary p-6 hover:border-accent transition-all">
+            <div class="flex items-center mb-4">
+              <div class="text-3xl mr-3 text-accent">🔄</div>
+              <h3 class="font-mono text-xl uppercase font-bold">Orchestration with tiny_chain</h3>
+            </div>
+            <p class="text-subtle-text mb-6">
+              <strong>tiny_chain</strong> is the main engine of tinyAgent's
+              orchestration. It lets your agent solve complex tasks by
+              chaining together multiple tools, using an LLM-powered "triage
+              agent" to plan the best sequence.
+            </p>
+            <div class="bg-[#1a1a2a] border-2 border-primary overflow-hidden">
+              <div class="bg-[#2d2d40] px-4 py-2 flex items-center">
+                <span class="text-primary text-sm font-mono">tariff_research.py</span>
+              </div>
+              <pre class="language-python p-4 text-sm md:text-base overflow-x-auto bg-[#1a1a2a]">#!/usr/bin/env python3
 """
 tiny_chain example: automatically find and summarise U.S. import-tariff data
 """
@@ -304,104 +411,46 @@ task_id = chain.submit_task(
 )
 
 # 3 – get structured results
-print(chain.get_task_status(task_id).result)</code></pre>
-              </div>
-              <div class="feature-highlights">
-                <h4>What it demonstrates</h4>
-                <ul>
-                  <li>
-                    🔗 Automatic tool planning (triage agent) - Picks search →
-                    browse → summarize
-                  </li>
-                  <li>
-                    🛠 Pluggable tools - DuckDuckGo search + custom browser + any
-                    @tool
-                  </li>
-                  <li>
-                    �� Structured trace - steps, tools_used, errors if any
-                  </li>
-                  <li>
-                    🤖 LLM-powered step - summarize converts page content →
-                    concise answer
-                  </li>
-                </ul>
-              </div>
+print(chain.get_task_status(task_id).result)</pre>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="documentation" class="resources-hub-section">
-        <div class="container">
-          <h2 class="section-title resources-title">
-            RESOURCES & COMMUNITY HUB
-          </h2>
-          <div class="brutalist-card">
-            <div class="brutalist-content">
-              <div class="brutalist-notice">
-                <h4 class="notice-title">| BETA STATUS</h4>
-                <p class="notice-text">
-                  tinyAgent = BETA until V1<br />
-                  WORKING BUT EVOLVING<br />
-                  SEE ROOM FOR IMPROVEMENT?<br />
-                  OPEN AN ISSUE. FIX IT.<br />
-                  WE VALUE YOUR INPUT.
-                </p>
-              </div>
-
-              <ul class="brutalist-list">
-                <li>
-                  <a
-                    href="https://github.com/alchemiststudiosDOTai/tinyAgent"
-                    target="_blank"
-                    rel="noopener"
-                    class="brutalist-link"
-                    >GITHUB REPO →</a
-                  >
+            <div class="mt-6 bg-dark-bg p-4 border border-primary">
+              <h4 class="font-mono uppercase font-bold mb-2 text-primary">What it demonstrates</h4>
+              <ul class="space-y-2 text-subtle-text">
+                <li class="flex items-start">
+                  <span class="mr-2">🔗</span>
+                  <span>Automatic tool planning (triage agent) - Picks search → browse → summarize</span>
                 </li>
-                <li>
-                  <a
-                    href="mailto:info@alchemiststudios.ai"
-                    class="brutalist-link"
-                    >CONTACT: info@alchemiststudios.ai →</a
-                  >
+                <li class="flex items-start">
+                  <span class="mr-2">🛠</span>
+                  <span>Pluggable tools - DuckDuckGo search + custom browser + any @tool</span>
                 </li>
-                <li>
-                  <a
-                    href="https://x.com/tunahorse21"
-                    target="_blank"
-                    rel="noopener"
-                    class="brutalist-link"
-                    >FOLLOW ON X →</a
-                  >
+                <li class="flex items-start">
+                  <span class="mr-2">🤖</span>
+                  <span>Structured trace - steps, tools_used, errors if any</span>
                 </li>
-                <li>
-                  <a
-                    href="https://alchemiststudios.ai"
-                    target="_blank"
-                    rel="noopener"
-                    class="brutalist-link"
-                    >ALCHEMIST STUDIOS →</a
-                  >
+                <li class="flex items-start">
+                  <span class="mr-2">🤖</span>
+                  <span>LLM-powered step - summarize converts page content → concise answer</span>
                 </li>
               </ul>
             </div>
           </div>
         </div>
-      </section>
-    </main>
+      </div>
+    </section>
 
-    <section id="merch" class="merch-section">
-      <div class="container">
-        <h2 class="section-title">Merch</h2>
-        <div class="merch-card">
+    <!-- ================= MERCH ================= -->
+    <section id="merch" class="py-16 border-b-2 border-primary bg-dark-bg">
+      <div class="container mx-auto px-4">
+        <h2 class="section-heading">Merch</h2>
+        <div class="bg-dark-card border-2 border-primary max-w-2xl mx-auto p-8 flex flex-col items-center">
           <img
             src="static/images/tinyAgent_logo_v2.png"
             alt="tinyAgent Sticker"
-            class="merch-image"
+            class="h-32 w-auto mb-6"
           />
-          <h3>tinyAgent Die Cut Stickers</h3>
-          <p>
+          <h3 class="font-mono text-xl uppercase mb-4">tinyAgent Die Cut Stickers</h3>
+          <p class="text-subtle-text text-center mb-6 max-w-xl">
             tinyAgent is a free, open-source project. If you find it useful and
             want to show your support, consider grabbing a sticker! I receive a
             small percentage (around 10%) from each purchase. No pressure at all
@@ -412,58 +461,146 @@ print(chain.get_task_status(task_id).result)</code></pre>
             href="https://www.stickermule.com/609c6a7bef2fe01/item/17847726?origin=PUBLIC_PROFILE"
             target="_blank"
             rel="noopener"
-            class="btn btn-secondary"
+            class="btn-secondary"
             >Get Stickers →</a
           >
         </div>
       </div>
     </section>
 
-    <footer class="site-footer-bottom">
-      <div class="container footer-container">
-        <a href="#">Documentation</a>
-        <a
-          href="https://github.com/alchemiststudiosDOTai/tinyAgent"
-          target="_blank"
-          rel="noopener"
-          >GitHub</a
-        >
-        <a href="#">Discord</a>
-        <!-- Add link later -->
-        <a href="#">Blog</a>
-        <!-- Add link later -->
+    <!-- ================= RESOURCES HUB ================= -->
+    <section id="documentation" class="py-16 bg-dark-bg border-b-2 border-primary">
+      <div class="container mx-auto px-4">
+        <h2 class="font-mono text-3xl uppercase text-center text-primary border-b-2 border-primary pb-4 mb-12">
+          RESOURCES & COMMUNITY HUB
+        </h2>
+        <div class="bg-dark-bg max-w-3xl mx-auto border-2 border-primary">
+          <div class="p-8">
+            <div class="bg-dark-card border-2 border-accent p-6 mb-8">
+              <h4 class="text-xl font-mono uppercase mb-4 text-accent">| BETA STATUS</h4>
+              <p class="font-mono text-primary leading-relaxed">
+                tinyAgent = BETA until V1<br />
+                WORKING BUT EVOLVING<br />
+                SEE ROOM FOR IMPROVEMENT?<br />
+                OPEN AN ISSUE. FIX IT.<br />
+                WE VALUE YOUR INPUT.
+              </p>
+            </div>
+
+            <ul class="space-y-2">
+              <li class="border-b border-border-color">
+                <a
+                  href="https://github.com/alchemiststudiosDOTai/tinyAgent"
+                  target="_blank"
+                  rel="noopener"
+                  class="font-mono text-primary text-lg block p-4 hover:bg-accent hover:text-dark-bg hover:pl-6 transition-all"
+                  >GITHUB REPO →</a
+                >
+              </li>
+              <li class="border-b border-border-color">
+                <a
+                  href="mailto:info@alchemiststudios.ai"
+                  class="font-mono text-primary text-lg block p-4 hover:bg-accent hover:text-dark-bg hover:pl-6 transition-all"
+                  >CONTACT: info@alchemiststudios.ai →</a
+                >
+              </li>
+              <li class="border-b border-border-color">
+                <a
+                  href="https://x.com/tunahorse21"
+                  target="_blank"
+                  rel="noopener"
+                  class="font-mono text-primary text-lg block p-4 hover:bg-accent hover:text-dark-bg hover:pl-6 transition-all"
+                  >FOLLOW ON X →</a
+                >
+              </li>
+              <li class="border-b border-border-color">
+                <a
+                  href="https://alchemiststudios.ai"
+                  target="_blank"
+                  rel="noopener"
+                  class="font-mono text-primary text-lg block p-4 hover:bg-accent hover:text-dark-bg hover:pl-6 transition-all"
+                  >ALCHEMIST STUDIOS →</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
-      <p class="copyright">
-        © 2024 tinyAgent by
-        <a href="https://alchemiststudios.ai" target="_blank" rel="noopener"
-          >alchemiststudios.ai</a
-        >. All rights reserved. | Need AI consulting?
-        <a href="mailto:info@alchemiststudios.ai">info@alchemiststudios.ai</a>
-      </p>
+    </section>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="py-8 border-t-2 border-primary bg-dark-card">
+      <div class="container mx-auto px-4">
+        <div class="flex flex-wrap justify-center gap-8 mb-6">
+          <a href="#" class="font-mono text-primary hover:text-accent transition-all">Documentation</a>
+          <a
+            href="https://github.com/alchemiststudiosDOTai/tinyAgent"
+            target="_blank"
+            rel="noopener"
+            class="font-mono text-primary hover:text-accent transition-all"
+            >GitHub</a
+          >
+          <a href="#" class="font-mono text-primary hover:text-accent transition-all">Discord</a>
+          <a href="#" class="font-mono text-primary hover:text-accent transition-all">Blog</a>
+        </div>
+        <p class="text-center text-subtle-text text-sm">
+          © 2024 tinyAgent by
+          <a href="https://alchemiststudios.ai" target="_blank" rel="noopener" class="text-primary hover:text-accent"
+            >alchemiststudios.ai</a
+          >. All rights reserved. | Need AI consulting?
+          <a href="mailto:info@alchemiststudios.ai" class="text-primary hover:text-accent">info@alchemiststudios.ai</a>
+        </p>
+      </div>
     </footer>
 
-    <!-- Add JS for mobile nav toggle -->
+    <!-- Prism.js for syntax highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        const mobileNavToggle = document.querySelector(".mobile-nav-toggle");
-        const mainNav = document.querySelector(".main-nav");
+        const mobileNavToggle = document.getElementById("mobileNavToggle");
+        const mobileMenu = document.getElementById("mobileMenu");
         const body = document.querySelector("body");
 
         // Function to toggle mobile menu
         function toggleMobileMenu() {
-          mainNav.classList.toggle("show");
-          mobileNavToggle.classList.toggle("active");
-
-          // Prevent background scrolling when menu is open
-          if (mainNav.classList.contains("show")) {
-            body.style.overflow = "hidden";
-          } else {
+          const isOpen = mobileMenu.classList.contains("translate-x-0");
+          
+          if (isOpen) {
+            mobileMenu.classList.remove("translate-x-0");
+            mobileMenu.classList.add("translate-x-full");
             body.style.overflow = "";
+          } else {
+            mobileMenu.classList.remove("translate-x-full");
+            mobileMenu.classList.add("translate-x-0");
+            body.style.overflow = "hidden";
+          }
+          
+          // Toggle active class on the toggle button
+          mobileNavToggle.classList.toggle("active");
+          if (mobileNavToggle.classList.contains("active")) {
+            mobileNavToggle.querySelector("span:first-child").style.transform = "translateY(8px) rotate(45deg)";
+            mobileNavToggle.querySelector("span:nth-child(2)").style.opacity = "0";
+            mobileNavToggle.querySelector("span:last-child").style.transform = "translateY(-8px) rotate(-45deg)";
+          } else {
+            mobileNavToggle.querySelector("span:first-child").style.transform = "";
+            mobileNavToggle.querySelector("span:nth-child(2)").style.opacity = "1";
+            mobileNavToggle.querySelector("span:last-child").style.transform = "";
           }
         }
 
         // Click event for toggle button
         mobileNavToggle.addEventListener("click", toggleMobileMenu);
+
+        // Close menu when clicking on a link
+        const navLinks = document.querySelectorAll("#mobileMenu a");
+        navLinks.forEach((link) => {
+          link.addEventListener("click", function () {
+            toggleMobileMenu();
+          });
+        });
 
         // Handle swipe gestures for menu
         let touchStartX = 0;
@@ -492,35 +629,25 @@ print(chain.get_task_status(task_id).result)</code></pre>
         function handleSwipe() {
           if (
             touchEndX < touchStartX - 50 &&
-            !mainNav.classList.contains("show")
+            mobileMenu.classList.contains("translate-x-full")
           ) {
             // Swipe left to open menu
             toggleMobileMenu();
           } else if (
             touchEndX > touchStartX + 50 &&
-            mainNav.classList.contains("show")
+            mobileMenu.classList.contains("translate-x-0")
           ) {
             // Swipe right to close menu
             toggleMobileMenu();
           }
         }
 
-        // Close menu when clicking on a link
-        const navLinks = document.querySelectorAll(".main-nav a");
-        navLinks.forEach((link) => {
-          link.addEventListener("click", function () {
-            mainNav.classList.remove("show");
-            mobileNavToggle.classList.remove("active");
-            body.style.overflow = "";
-          });
-        });
-
         // Close menu when clicking outside
         document.addEventListener("click", function (e) {
           if (
-            mainNav.classList.contains("show") &&
-            !e.target.closest(".main-nav") &&
-            !e.target.closest(".mobile-nav-toggle")
+            mobileMenu.classList.contains("translate-x-0") &&
+            !e.target.closest("#mobileMenu") &&
+            !e.target.closest("#mobileNavToggle")
           ) {
             toggleMobileMenu();
           }
@@ -532,17 +659,24 @@ print(chain.get_task_status(task_id).result)</code></pre>
         const text = codeBlock.textContent;
         navigator.clipboard.writeText(text).then(() => {
           const copyText = button.querySelector(".copy-text");
-          copyText.textContent = "Copied!";
-          setTimeout(() => {
-            copyText.textContent = "Copy";
-          }, 2000);
+          if (copyText) {
+            copyText.textContent = "Copied!";
+            setTimeout(() => {
+              copyText.textContent = "Copy";
+            }, 2000);
+          } else {
+            button.textContent = "✓ Copied";
+            setTimeout(() => {
+              button.textContent = "📋 Copy";
+            }, 2000);
+          }
         });
       }
 
       // Add animations for elements as they enter viewport
       document.addEventListener("DOMContentLoaded", function () {
         const animateItems = document.querySelectorAll(
-          ".feature-card, .testimonial-card, .concept-card"
+          ".bg-dark-card"
         );
 
         const observer = new IntersectionObserver(
@@ -560,508 +694,21 @@ print(chain.get_task_status(task_id).result)</code></pre>
         animateItems.forEach((item) => {
           observer.observe(item);
         });
-
-        // Make code samples responsive on viewport resize
-        function adjustCodeForSmallScreens() {
-          const codeBlocks = document.querySelectorAll(
-            ".hero-code pre, .terminal-window pre, .code-window pre"
-          );
-          if (window.innerWidth <= 768) {
-            codeBlocks.forEach((block) => {
-              block.style.fontSize = "0.8rem";
-              block.style.padding = "1rem";
-            });
-          } else {
-            codeBlocks.forEach((block) => {
-              block.style.fontSize = "";
-              block.style.padding = "";
-            });
-          }
-        }
-
-        // Run on load and when window resizes
-        adjustCodeForSmallScreens();
-        window.addEventListener("resize", adjustCodeForSmallScreens);
       });
     </script>
 
-    <!-- Add Prism.js for syntax highlighting -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
-
+    <!-- Utility classes -->
     <style>
-      /* BRUTALIST TYPOGRAPHY OVERRIDES */
-      h1,
-      h2,
-      h3,
-      h4,
-      h5,
-      h6,
-      .main-nav a,
-      .btn,
-      .section-title,
-      .feature-card h3,
-      .terminal-title,
-      .code-header,
-      .concept-card h3 {
-        font-family: "JetBrains Mono", monospace;
-        text-transform: uppercase;
-        letter-spacing: -0.5px;
-        font-weight: 700;
-      }
-
-      .section-title {
-        border-bottom: 2px solid var(--primary-color);
-        text-align: left;
-        transform: none;
-        left: 0;
-        display: block;
-        padding-bottom: 1rem;
-        margin-bottom: 3rem;
-      }
-
-      .section-title::after {
-        display: none;
-      }
-
-      .feature-card,
-      .concept-card,
-      .terminal-window,
-      .code-window {
-        border: 2px solid var(--primary-color);
-        border-radius: 0;
-        box-shadow: none;
-      }
-
-      .feature-card:hover,
-      .concept-card:hover {
-        transform: none;
-        border-color: var(--accent-color);
-      }
-
-      .btn {
-        border-radius: 0;
-        box-shadow: none;
-        border: 2px solid var(--primary-color);
-      }
-
-      .btn:hover {
-        transform: none;
-        border-color: var(--accent-color);
-      }
-
-      .main-nav a::after {
-        height: 2px;
-      }
-
-      pre,
-      code {
-        border-radius: 0;
-      }
-
-      .terminal-window,
-      .code-window {
-        border-radius: 0;
-      }
-
-      .terminal-header,
-      .code-header {
-        border-radius: 0;
-      }
-
-      .terminal-button {
-        border-radius: 0;
-      }
-
-      /* Make links more brutalist */
-      a {
-        position: relative;
-      }
-
-      a:hover {
-        padding-left: 10px;
-        transition: padding 0.2s ease;
-      }
-
-      /* Remove gradients and shadows */
-      .gradient-text {
-        background: none;
-        -webkit-background-clip: unset;
-        background-clip: unset;
-        color: var(--accent-color);
-      }
-
-      .hero::after {
-        display: none;
-      }
-
-      /* Add brutalist borders */
-      section {
-        border-bottom: 2px solid var(--primary-color);
-      }
-
-      .site-header {
-        border-bottom: 2px solid var(--primary-color);
-        box-shadow: none;
-        backdrop-filter: none;
-      }
-
-      .footer-container {
-        border-top: 2px solid var(--primary-color);
-      }
-
-      .resources-hub-section {
-        background: var(--dark-bg);
-        padding: 4rem 0;
-        font-family: "JetBrains Mono", monospace;
-      }
-
-      .resources-title {
-        color: var(--primary-color);
-        font-size: 2.5rem;
-        text-align: center;
-        margin-bottom: 3rem;
-        text-transform: uppercase;
-        border-bottom: 2px solid var(--primary-color);
-        padding-bottom: 1rem;
-        font-family: "JetBrains Mono", monospace;
-      }
-
-      .brutalist-card {
-        background: var(--dark-bg);
-        max-width: 800px;
-        margin: 0 auto;
-      }
-
-      .brutalist-content {
-        padding: 2rem;
-      }
-
-      .brutalist-notice {
-        background: var(--dark-card);
-        border: 1px solid var(--accent-color);
-        padding: 2rem;
-        margin-bottom: 2rem;
-        color: var(--primary-color);
-      }
-
-      .notice-title {
-        font-size: 1.2rem;
-        margin: 0 0 1rem 0;
-        text-transform: uppercase;
-        color: var(--accent-color);
-      }
-
-      .notice-text {
-        font-size: 1rem;
-        line-height: 1.6;
-        margin: 0;
-      }
-
-      .brutalist-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-      }
-
-      .brutalist-list li {
-        margin-bottom: 1rem;
-        border-bottom: 1px solid var(--border-color);
-      }
-
-      .brutalist-link {
-        color: var(--primary-color);
-        text-decoration: none;
-        font-size: 1.1rem;
-        display: block;
-        padding: 1rem;
-        transition: all 0.2s ease;
-      }
-
-      .brutalist-link:hover {
-        background: var(--accent-color);
-        color: var(--dark-bg);
-        padding-left: 2rem;
-      }
-
-      .ascii-banner {
-        background: var(--dark-bg);
-        padding: 2rem;
-        margin-top: 2rem;
-        font-family: "JetBrains Mono", monospace;
-        text-align: center;
-        border-bottom: 2px solid var(--primary-color);
-      }
-
-      .brutalist-title {
-        font-family: "JetBrains Mono", monospace;
-        font-size: 2rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: -1px;
-        margin-bottom: 2rem;
-        color: var(--primary-color);
-        border-bottom: 2px solid var(--primary-color);
-        padding-bottom: 1rem;
-      }
-
-      .ascii-art {
-        color: var(--primary-color);
-        margin: 0;
-        line-height: 1.4;
-        font-size: 1.2rem;
-        overflow-x: auto;
-        white-space: pre;
-        letter-spacing: 1px;
-      }
-
-      .creator-info {
-        text-align: center;
-        color: var(--subtle-text);
-        margin-top: 1.5rem;
-        padding-top: 1.5rem;
-        border-top: 1px solid var(--border-color);
-        font-size: 0.9rem;
-        line-height: 1.6;
-      }
-
-      /* Added mobile responsive styles */
-      .mobile-nav-toggle {
-        display: none;
-        flex-direction: column;
-        justify-content: space-between;
-        width: 30px;
-        height: 21px;
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        z-index: 200;
-      }
-
-      .mobile-nav-toggle .bar {
-        height: 3px;
-        width: 100%;
-        background-color: var(--primary-color);
-        transition: all 0.3s ease;
-      }
-
-      .mobile-nav-toggle.active .bar:nth-child(1) {
-        transform: translateY(9px) rotate(45deg);
-      }
-
-      .mobile-nav-toggle.active .bar:nth-child(2) {
-        opacity: 0;
-      }
-
-      .mobile-nav-toggle.active .bar:nth-child(3) {
-        transform: translateY(-9px) rotate(-45deg);
-      }
-
-      .header-logo {
-        max-height: 40px;
-        width: auto;
-      }
-
-      /* Enhanced Mobile Responsiveness */
-      @media (max-width: 992px) {
-        .hero-container {
-          grid-template-columns: 1fr;
-          gap: 2rem;
-        }
-
-        .hero-content {
-          padding-right: 0;
-          text-align: center;
-        }
-
-        .hero-logo {
-          margin: 0 auto 2rem;
-        }
-
-        .hero-cta {
-          justify-content: center;
-        }
-
-        .hero-code {
-          max-width: 100%;
-          margin: 0 auto;
-        }
-
-        .features-grid,
-        .testimonials-grid,
-        .concept-cards {
-          grid-template-columns: repeat(2, 1fr);
-        }
-
-        .ascii-art {
-          font-size: 1rem;
-        }
-      }
-
-      @media (max-width: 768px) {
-        .container {
-          width: 95%;
-          padding: 0 0.5rem;
-        }
-
-        .mobile-nav-toggle {
-          display: flex;
-        }
-
-        .main-nav {
-          position: fixed;
-          top: 0;
-          right: -100%;
-          width: 80%;
-          height: 100vh;
-          background-color: var(--dark-card);
-          flex-direction: column;
-          justify-content: flex-start;
-          padding-top: 5rem;
-          z-index: 100;
-          transition: right 0.3s ease;
-          border-left: 2px solid var(--primary-color);
-        }
-
-        .main-nav.show {
-          right: 0;
-        }
-
-        .main-nav ul {
-          flex-direction: column;
-          gap: 0;
-        }
-
-        .main-nav li {
-          width: 100%;
-          border-bottom: 1px solid var(--border-color);
-        }
-
-        .main-nav a {
-          display: block;
-          padding: 1.2rem 2rem;
-          width: 100%;
-          color: var(--primary-color);
-        }
-
-        .main-nav a:hover {
-          background-color: var(--dark-bg);
-          padding-left: 2.5rem;
-        }
-
-        .hero-content h1 {
-          font-size: 2rem;
-        }
-
-        .subtitle {
-          font-size: 1rem;
-        }
-
-        .btn {
-          padding: 0.6rem 1rem;
-          font-size: 0.9rem;
-        }
-
-        .section-title {
-          font-size: 1.75rem;
-          margin-bottom: 2rem;
-        }
-
-        .features-grid,
-        .testimonials-grid,
-        .concept-cards {
-          grid-template-columns: 1fr;
-        }
-
-        .feature-card,
-        .concept-card,
-        .testimonial-card {
-          padding: 1.5rem;
-        }
-
-        /* Add overflow handling for code windows in concept cards */
-        .concept-card .code-window pre {
-          overflow-x: auto; /* Allow horizontal scrolling if needed */
-        }
-
-        .footer-container {
-          flex-direction: column;
-          align-items: center;
-          gap: 1rem;
-        }
-
-        .copyright {
-          text-align: center;
-          font-size: 0.8rem;
-        }
-
-        .ascii-art {
-          font-size: 0.7rem;
-          letter-spacing: 0;
-        }
-
-        .brutalist-title {
-          font-size: 1.5rem;
-        }
-
-        /* Adjust the hero code block for mobile */
-        .hero-code {
-          width: 100%;
-          margin: 1rem auto;
-          font-size: 0.8rem;
-        }
-
-        .hero-code pre {
-          padding: 1rem;
-        }
-
-        /* Create more space in mobile view */
-        section {
-          padding: 3rem 0;
-        }
-
-        /* Adjust spacing for headers on mobile */
-        .site-header {
-          padding: 0.8rem 0;
-        }
-
-        /* Make buttons more mobile-friendly */
-        .hero-cta {
-          flex-direction: column;
-          gap: 1rem;
-          width: 100%;
-        }
-
-        .hero-cta .btn {
-          width: 100%;
-          text-align: center;
-        }
-      }
-
-      /* Small mobile devices */
-      @media (max-width: 480px) {
-        .hero-content h1 {
-          font-size: 1.75rem;
-        }
-
-        .brutalist-link {
-          font-size: 0.9rem;
-          padding: 0.8rem;
-        }
-
-        .brutalist-notice {
-          padding: 1.5rem;
-        }
-
-        .notice-title {
-          font-size: 1rem;
-        }
-
-        .notice-text {
-          font-size: 0.9rem;
-        }
-      }
+      .btn-primary{@apply bg-accent text-white font-mono uppercase px-6 py-3 border-2 border-primary hover:brightness-110 transition-shadow shadow-brutal;}
+      .btn-secondary{@apply text-primary font-mono uppercase px-6 py-3 border-2 border-primary hover:bg-accent/10 transition-colors;}
+      .section-heading{@apply font-mono text-3xl md:text-4xl uppercase text-center border-b-2 border-primary inline-block pb-2;}
+      .feature-card{@apply bg-dark-card border-2 border-primary p-6 shadow-brutal hover:border-accent transition-all;}
+      .feature-card h3{@apply font-mono text-xl mb-2;}
+      .concept-card{@apply bg-dark-card border-2 border-primary p-6 shadow-brutal hover:border-accent transition-all;}
+      .concept-icon{@apply text-accent text-2xl mb-4;}
+      @keyframes fadeIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+      .animate-fadeIn{animation:fadeIn 0.6s both;}
+      .delay-200{animation-delay:0.2s;}
     </style>
   </body>
 </html>
